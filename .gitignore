@@ -1,0 +1,50 @@
+# ───────── ENTORNO VIRTUAL ─────────
+venv/
+.env
+
+# ───────── PYTHON ─────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.db
+
+# ───────── ARCHIVOS SENSIBLES ─────────
+*.env
+*.env.*
+!example.env
+
+# ───────── LOGS y CACHE ─────────
+*.log
+*.sqlite3
+*.db
+cache/
+logs/
+
+# ───────── CONFIG / DEPLOY ─────────
+*.pid
+*.seed
+*.lock
+
+# ───────── EDITORES ─────────
+.vscode/
+.idea/
+*.swp
+
+# ───────── SISTEMA / BASURA ─────────
+.DS_Store
+Thumbs.db
+
+# ───────── MODEL / DATA ─────────
+data/raw/
+data/processed/
+data/models/
+*.pt
+*.pickle
+*.joblib
+*.h5
+
+# ───────── JUPYTER (por si lo usas) ─────────
+*.ipynb_checkpoints
