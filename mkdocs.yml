@@ -1,0 +1,22 @@
+site_name: Reto IBM + SENA 2025 - Inteligencia Artificial
+nav:
+  - Inicio: index.md
+  - Objetivos: objetivos.md
+  - Metodología Ágil: metodologia_agil.md
+  - Arquitectura: arquitectura.md
+  - Inteligencia Artificial: inteligencia_artificial.md
+  - Impacto Social: impacto_social.md
+  - Resultados: resultados.md
+  - Conclusiones: conclusiones.md
+
+theme:
+  name: material
+  language: es
+  palette:
+    primary: indigo
+    accent: deep purple
+markdown_extensions:
+  - toc:
+      permalink: true
+  - tables
+  - fenced_code
