@@ -3,27 +3,30 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 import os
 
-# Módulos del dominio social
+# ==============================
+# 📦 Importar módulos de aplicación
+# ==============================
 from app.application.social_module import (
     load_dataset, analyze_social_patterns, compute_social_index
 )
-
-# Pipeline completo (ETL + NLP + Social + Visual)
 from app.application.pipeline import run_pipeline
 
 # ==============================
-# 📦 CONFIGURACIÓN BASE
+# ⚙️ Configuración base del router
 # ==============================
 router = APIRouter(prefix="/api", tags=["Análisis Social"])
 DATA_PATH = "data/clean_data.csv"
 
+# Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "app", "api", "templates"))
+
+# Directorio de las plantillas (HTML)
+TEMPLATES_DIR = os.path.join(BASE_DIR, "app", "api", "templates")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # ==============================
-# 🌍 ENDPOINTS ANALÍTICOS EXISTENTES
+# 🌍 Endpoints analíticos
 # ==============================
-
 @router.get("/patterns")
 def get_social_patterns():
     """Obtiene patrones sociales por ciudad."""
@@ -39,8 +42,9 @@ def get_social_index():
     summary = compute_social_index(df)
     return summary.to_dict(orient="records")
 
+
 # ==============================
-# ⚙️ NUEVO: Ejecutar pipeline completo
+# 🚀 Ejecutar pipeline completo
 # ==============================
 @router.post("/run_pipeline")
 def trigger_pipeline():
@@ -60,7 +64,7 @@ def trigger_pipeline():
             "message": "Pipeline ejecutado correctamente.",
             "results": {
                 "data_folder": "data/",
-                "dashboard_images": "app/api/static/"
+                "dashboard_images": "app/infrastructure/visuals/"
             }
         }
         return JSONResponse(content=response, status_code=200)
@@ -74,9 +78,9 @@ def trigger_pipeline():
 
 
 # ==============================
-# 🖥️ NUEVO: Dashboard visual
+# 🖥️ Dashboard visual
 # ==============================
 @router.get("/dashboard", response_class=HTMLResponse)
 def show_dashboard(request: Request):
-    """Muestra el dashboard de impacto social."""
+    """Renderiza el dashboard visual de ComuniMind."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
