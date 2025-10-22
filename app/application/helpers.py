@@ -23,23 +23,28 @@ def mostrar_resumen(df, top_n=5):
     )
     for _, row in resumen.iterrows():
         print(f"  • Tema {row['tema']:>2} → {row['palabras_clave']}  | {row['frecuencia']} reportes")
-    print("   (ver imágenes en data/visuals/ y CSVs generados para detalle)")
+    print("   (ver imágenes en data/visuals/ y reportes en data/reports/)")
+
 
 # ============================================================
 #  EVALUACIÓN + GRÁFICOS (CLUSTERING + SENTIMIENTO)
 # ============================================================
 def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     """
-    - Calcula métricas de clustering (Silhouette, Davies-Bouldin, Calinski-Harabasz)
+    - Calcula métricas del clustering (Silhouette, Davies-Bouldin, Calinski-Harabasz)
     - Genera curvas de selección de K (elbow e índice Silhouette por K)
-    - Grafica distribución por tema, sentimientos por tema, pastel global de sentimientos
-    - Grafica histograma de confianza POS/NEG del clasificador de sentimiento
-    - Exporta métricas y tablas a CSV/JSON
+    - Crea gráficos por tema y sentimientos
+    - Guarda métricas y tablas en data/reports (con separador ';')
     """
     print("\nEvaluando modelo y generando gráficos...")
-    os.makedirs("data/visuals", exist_ok=True)
 
-    # --------- MÉTRICAS DE CLUSTERING (con el K actual) ---------
+    # Crear carpetas ordenadas
+    os.makedirs("data/visuals", exist_ok=True)
+    os.makedirs("data/reports", exist_ok=True)
+
+    # ============================================================
+    #  MÉTRICAS DE CLUSTERING
+    # ============================================================
     try:
         sil = silhouette_score(embeddings, df["tema"])
         db = davies_bouldin_score(embeddings, df["tema"])
@@ -50,11 +55,12 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
         print(f"No se pudieron calcular métricas del clustering: {e}")
 
     # Guardar métricas en JSON
-    with open("data/visuals/cluster_metrics.json", "w", encoding="utf-8") as f:
+    with open("data/reports/cluster_metrics.json", "w", encoding="utf-8") as f:
         json.dump({"silhouette": sil, "davies_bouldin": db, "calinski_harabasz": ch}, f, ensure_ascii=False, indent=2)
 
-    # --------- CURVAS PARA ELEGIR K (opcional pero útil en demo) ---------
-    # Reentrenamos KMeans para varios K y graficamos Inertia (Elbow) y Silhouette.
+    # ============================================================
+    # CURVAS DE EVALUACIÓN DE K
+    # ============================================================
     try:
         ks = list(range(k_min, k_max + 1))
         inertias, silhouettes = [], []
@@ -62,24 +68,20 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
             km = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = km.fit_predict(embeddings)
             inertias.append(km.inertia_)
-            # Silhouette solo si k > 1 y hay muestras suficientes
-            if len(set(labels)) > 1:
-                silhouettes.append(silhouette_score(embeddings, labels))
-            else:
-                silhouettes.append(np.nan)
+            silhouettes.append(silhouette_score(embeddings, labels) if len(set(labels)) > 1 else np.nan)
 
         # Elbow (Inertia)
         plt.figure(figsize=(8, 5))
         plt.plot(ks, inertias, marker="o")
         plt.title("Curva del codo (Inertia vs K)")
         plt.xlabel("K (número de clusters)")
-        plt.ylabel("Inertia (↓ mejor codo)")
+        plt.ylabel("Inercia (↓ mejor codo)")
         plt.xticks(ks)
         plt.grid(alpha=0.3)
         plt.tight_layout()
         plt.savefig("data/visuals/elbow_k.png", dpi=300, bbox_inches="tight")
         plt.close()
-        print("Guardado: data/visuals/elbow_k.png")
+        print("📊 Guardado: data/visuals/elbow_k.png")
 
         # Silhouette por K
         plt.figure(figsize=(8, 5))
@@ -96,7 +98,9 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     except Exception as e:
         print(f"No se pudieron generar curvas de K: {e}")
 
-    # --------- ETIQUETAS LEGIBLES PARA LOS TEMAS ---------
+    # ============================================================
+    # DISTRIBUCIÓN DE TEMAS
+    # ============================================================
     etiquetas_temas = (
         df.groupby("tema")["palabras_clave"]
           .first()
@@ -105,12 +109,11 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
           .to_dict()
     )
 
-    # --------- GRAF. 1: DISTRIBUCIÓN DE COMENTARIOS POR TEMA ---------
     tema_counts = df["tema"].value_counts().sort_index()
     temas_legibles = [etiquetas_temas.get(t, str(t)) for t in tema_counts.index]
 
     plt.figure(figsize=(10, 5))
-    plt.bar(temas_legibles, tema_counts.values)
+    plt.bar(temas_legibles, tema_counts.values, color="#3FE4C0")
     plt.title("Distribución de comentarios por tema")
     plt.xlabel("Tema detectado (palabras clave)")
     plt.ylabel("Cantidad de comentarios")
@@ -123,15 +126,17 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     plt.close()
     print("Guardado: data/visuals/distribucion_temas.png")
 
-    # Exportar tamaños de cluster
+    # Guardar tamaños de cluster
     tema_counts.rename_axis("tema").reset_index(name="cantidad") \
-        .to_csv("data/visuals/cluster_sizes.csv", index=False)
+        .to_csv("data/reports/cluster_sizes.csv", sep=";", encoding="utf-8", index=False)
 
-    # --------- GRAF. 2: SENTIMIENTOS POR TEMA ---------
+    # ============================================================
+    # SENTIMIENTOS POR TEMA
+    # ============================================================
     pivot = df.groupby(["tema", "sentimiento"]).size().unstack(fill_value=0)
     pivot.index = [etiquetas_temas.get(t, str(t)) for t in pivot.index]
 
-    ax = pivot.plot(kind="bar", figsize=(10, 5))
+    ax = pivot.plot(kind="bar", figsize=(10, 5), colormap="coolwarm")
     ax.set_title("Sentimientos por tema detectado")
     ax.set_xlabel("Tema detectado (palabras clave)")
     ax.set_ylabel("Cantidad de comentarios")
@@ -141,11 +146,13 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     plt.close()
     print("Guardado: data/visuals/sentimientos_por_tema.png")
 
-    # --------- GRAF. 3: PASTEL GLOBAL DE SENTIMIENTOS + CSV ---------
+    # ============================================================
+    # PASTEL GLOBAL DE SENTIMIENTOS
+    # ============================================================
     conteo = df["sentimiento"].value_counts()
     conteo.rename_axis("clase").reset_index(name="cantidad") \
         .assign(porcentaje=lambda d: (d["cantidad"] / d["cantidad"].sum() * 100).round(2)) \
-        .to_csv("data/visuals/sentimientos_globales.csv", index=False)
+        .to_csv("data/reports/sentimientos_globales.csv", sep=";", encoding="utf-8", index=False)
 
     etiquetas = conteo.index.tolist()
     valores = conteo.values.tolist()
@@ -153,15 +160,17 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     plt.pie(valores,
             labels=[f"{e} ({v})" for e, v in zip(etiquetas, valores)],
             autopct="%1.1f%%",
-            startangle=140)
+            startangle=140,
+            colors=["#E63946", "#3FE4C0", "#F4D35E"])
     plt.title("Distribución global de sentimientos")
     plt.tight_layout()
     plt.savefig("data/visuals/sentimientos_globales.png", dpi=300, bbox_inches="tight")
     plt.close()
     print("Guardado: data/visuals/sentimientos_globales.png")
 
-    # --------- GRAF. 4: HISTOGRAMA DE CONFIANZA DEL CLASIFICADOR ---------
-    # Estas columnas las crea nlp_service. Si no están, se omite.
+    # ============================================================
+    # HISTOGRAMA DE CONFIANZA DEL CLASIFICADOR
+    # ============================================================
     if {"sent_pos", "sent_neg"}.issubset(df.columns):
         plt.figure(figsize=(8, 5))
         plt.hist(df["sent_pos"], bins=20, alpha=0.6, label="POS")
@@ -177,4 +186,4 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
     else:
         print("Columnas de confianza de sentimiento no disponibles (sent_pos/sent_neg).")
 
-    print("Evaluación y gráficos generados.")
+    print("Evaluación y gráficos generados correctamente.")
