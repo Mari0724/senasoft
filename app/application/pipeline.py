@@ -1,10 +1,6 @@
 import os
 import shutil
 import pandas as pd
-
-# ==============================
-# 📦 Importar módulos de la aplicación
-# ==============================
 from app.application.data_service import run_etl
 from app.application.nlp_service import ejecutar_nlp_pipeline
 from app.application.social_module import load_dataset, compute_social_index
@@ -29,7 +25,7 @@ def run_pipeline():
     # -------------------------------------------------
     # 1 ETL: limpieza y normalización de datos
     # -------------------------------------------------
-    print("🧹 Paso 1: Ejecutando limpieza de datos (ETL)...")
+    print("Paso 1: Ejecutando limpieza de datos (ETL)...")
     run_etl()
 
     # -------------------------------------------------
@@ -62,7 +58,7 @@ def run_pipeline():
     # -------------------------------------------------
     # 5 Generar visualizaciones finales
     # -------------------------------------------------
-    print("\n🎨 Paso 5: Generando visualizaciones sociales...")
+    print("\n Paso 5: Generando visualizaciones sociales...")
     output_visuals = os.path.join(BASE_DIR, "app", "infrastructure", "visuals")
     rutas = generar_todos_los_graficos(output_visuals)
     print(" Gráficos generados:", rutas)

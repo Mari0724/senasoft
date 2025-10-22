@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Body
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 import os
+from app.application.openai_service import generar_explicacion_desde_csv
+
 import pandas as pd
 
 # ==============================
@@ -77,6 +79,17 @@ def trigger_pipeline():
         }
         return JSONResponse(content=response, status_code=500)
 
+
+@router.get("/explain")
+def explain_dashboard():
+    """
+    Genera una explicación automática del dashboard leyendo los CSV del análisis social y de sentimiento.
+    """
+    try:
+        explicacion = generar_explicacion_desde_csv()
+        return {"status": "success", "explicacion": explicacion}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 # ==============================
 # 🖥️ Dashboard visual
