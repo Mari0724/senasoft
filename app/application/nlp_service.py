@@ -14,10 +14,10 @@ from app.application.helpers import evaluar_y_graficar, mostrar_resumen
 nltk.download("stopwords")
 
 # ============================================================
-#  1️⃣ CARGAR Y PREPARAR DATOS LIMPIOS
+#  1 CARGAR Y PREPARAR DATOS LIMPIOS
 # ============================================================
 def cargar_y_preparar_datos(path: str) -> pd.DataFrame:
-    print("📂 Cargando dataset limpio...")
+    print("Cargando dataset limpio...")
     df = pd.read_csv(path, sep=";", encoding="utf-8")
     df.columns = [c.strip().lower() for c in df.columns]
 
@@ -44,7 +44,7 @@ def cargar_y_preparar_datos(path: str) -> pd.DataFrame:
 #  2️⃣ GENERAR EMBEDDINGS SEMÁNTICOS
 # ============================================================
 def generar_embeddings(df: pd.DataFrame):
-    print("🔍 Generando embeddings semánticos (modelo MiniLM)...")
+    print("Generando embeddings semánticos (modelo MiniLM)...")
     model = SentenceTransformer("all-MiniLM-L6-v2")
     embeddings = model.encode(df["comentario_limpio"].tolist(), show_progress_bar=True)
     print("✅ Embeddings generados correctamente.")
@@ -52,14 +52,14 @@ def generar_embeddings(df: pd.DataFrame):
 
 
 # ============================================================
-#  3️⃣ AGRUPAR TEMAS Y EXTRAER PALABRAS CLAVE
+#  3 AGRUPAR TEMAS Y EXTRAER PALABRAS CLAVE
 # ============================================================
 def agrupar_y_extraer_temas(df: pd.DataFrame, embeddings, n_clusters: int = 6) -> pd.DataFrame:
-    print(f"🧠 Agrupando en {n_clusters} temas...")
+    print(f"Agrupando en {n_clusters} temas...")
     kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
     df["tema"] = kmeans.fit_predict(embeddings)
 
-    print("🗝️ Extrayendo palabras clave por tema...")
+    print("Extrayendo palabras clave por tema...")
     temas = sorted(df["tema"].unique())
     resultados = []
 
@@ -81,10 +81,10 @@ def agrupar_y_extraer_temas(df: pd.DataFrame, embeddings, n_clusters: int = 6) -
 
 
 # ============================================================
-#  4️⃣ ANÁLISIS DE SENTIMIENTOS (Modelo Español BETO)
+#  4 ANÁLISIS DE SENTIMIENTOS (Modelo Español BETO)
 # ============================================================
 def analizar_sentimientos(df: pd.DataFrame):
-    print("💬 Analizando sentimientos con modelo español (BETO)...")
+    print("Analizando sentimientos con modelo español (BETO)...")
     model_name = "pysentimiento/robertuito-sentiment-analysis"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
@@ -110,8 +110,8 @@ def analizar_sentimientos(df: pd.DataFrame):
     df["sent_neu"] = probas[:, 1]
     df["sent_pos"] = probas[:, 2]
 
-    # ✅ Sanity check (3 frases rápidas)
-    print("\n🧪 Sanity check:")
+    # Sanity check (3 frases rápidas)
+    print("\nSanity check:")
     ejemplos = ["Excelente atención", "Muy mala gestión", "Regular el servicio"]
     with torch.no_grad():
         t = tokenizer(ejemplos, padding=True, truncation=True, return_tensors="pt")
@@ -125,7 +125,7 @@ def analizar_sentimientos(df: pd.DataFrame):
 
 
 # ============================================================
-#  5️⃣ PIPELINE COMPLETO
+#  5 NLP COMPLETO
 # ============================================================
 def ejecutar_nlp_pipeline():
     df = cargar_y_preparar_datos("data/clean_data.csv")
@@ -135,13 +135,13 @@ def ejecutar_nlp_pipeline():
 
     # Guardar resultados combinados
     df.to_csv("data/themes_nlp.csv", sep=";", encoding="utf-8", index=False)
-    print("📁 Resultados guardados en data/themes_nlp.csv")
+    print("Resultados guardados en data/themes_nlp.csv")
 
     # Mostrar y evaluar
     mostrar_resumen(df)
     evaluar_y_graficar(df, embeddings)
 
-    print("\n🎯 Proceso NLP completado exitosamente.")
+    print("\n✅ Proceso NLP completado exitosamente.")
 
 
 # ============================================================
