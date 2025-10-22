@@ -1,0 +1,11 @@
+ciudad;vulnerabilidad;nivel_de_urgencia;patron_social;impacto_social;n_reportes
+cucuta;0.52;0.49;Zona invisible;0.51;966
+barranquilla;0.5;0.51;Zona crítica;0.5;943
+cali;0.51;0.49;Zona invisible;0.5;967
+bucaramanga;0.49;0.51;Zona puntual;0.5;985
+manizales;0.49;0.51;Zona puntual;0.5;1013
+bogota;0.49;0.5;Estable;0.49;1023
+cartagena;0.49;0.49;Zona invisible;0.49;985
+medellin;0.48;0.5;Estable;0.49;1010
+pereira;0.49;0.48;Estable;0.49;983
+santa marta;0.48;0.51;Zona puntual;0.49;989
