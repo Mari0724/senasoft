@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from app.api import social_routes
+from app.api import routes
 
 app = FastAPI(title="SENASOFT", version="1.0")
-app.include_router(social_routes.router)
+app.include_router(routes.router)
 
 @app.get("/")
 def home():

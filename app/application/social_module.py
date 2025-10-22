@@ -21,15 +21,31 @@ def load_dataset(path: str) -> pd.DataFrame:
 
 
 def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Normaliza variables numéricas y de urgencia."""
-    if "nivel_de_urgencia" in df.columns:
-        df["nivel_de_urgencia"] = df["nivel_de_urgencia"].str.lower().str.strip()
-        df["nivel_de_urgencia"] = df["nivel_de_urgencia"].replace({
-            "urgente": 1,
-            "no urgente": 0,
-            "no_urgente": 0
-        })
+    """Normaliza columnas: limpia texto y convierte variables binarias a 0/1."""
 
+    # --- Normalizar nombres de columnas (por si acaso) ---
+    df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
+
+    # --- Normalizar nivel de urgencia ---
+    if "nivel_de_urgencia" in df.columns:
+        if df["nivel_de_urgencia"].dtype == "object":
+            # Si son textos tipo “urgente” o “no urgente”
+            df["nivel_de_urgencia"] = (
+                df["nivel_de_urgencia"]
+                .astype(str)
+                .str.lower()
+                .str.strip()
+                .replace({
+                    "urgente": 1,
+                    "no urgente": 0,
+                    "no_urgente": 0
+                })
+            )
+        else:
+            # Si ya es numérica (0 o 1), aseguramos el rango
+            df["nivel_de_urgencia"] = df["nivel_de_urgencia"].clip(0, 1)
+
+    # --- Convertir columnas binarias a enteros ---
     for col in ["acceso_a_internet", "atencion_previa_del_gobierno", "zona_rural"]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
