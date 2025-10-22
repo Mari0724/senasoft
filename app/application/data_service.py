@@ -40,26 +40,26 @@ def normalize_columns(columns):
 def run_etl():
     print("Iniciando ETL completo con normalización numérica y textual...")
 
-    # 1️⃣ Detectar codificación
+    # 1 Detectar codificación
     with open(DATA_PATH, "rb") as f:
         raw = f.read()
         detected = chardet.detect(raw)
         encoding_used = detected["encoding"]
     print(f" Codificación detectada: {encoding_used}")
 
-    # 2️⃣ Leer CSV
+    # 2 Leer CSV
     df = pd.read_csv(DATA_PATH, sep=",", encoding=encoding_used, on_bad_lines="skip")
     print(f" Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
 
-    # 3️⃣ Normalizar nombres de columnas
+    # 3 Normalizar nombres de columnas
     df.columns = normalize_columns(df.columns)
 
-    # 4️⃣ Limpiar texto en columnas tipo string
+    # 4 Limpiar texto en columnas tipo string
     for col in df.columns:
         if df[col].dtype == "object":
             df[col] = df[col].astype(str).apply(normalize_text)
 
-    # 5️⃣ Procesar la columna edad
+    # 5 Procesar la columna edad
     if "edad" in df.columns:
         # Convertir a numérico (coerce convierte errores en NaN)
         df["edad"] = pd.to_numeric(df["edad"], errors="coerce")
@@ -70,10 +70,10 @@ def run_etl():
         # Convertir floats válidos a enteros y NaN a vacío
         df["edad"] = df["edad"].apply(lambda x: "" if pd.isna(x) else int(x))
 
-    # 6️⃣ Reemplazar espacios vacíos o 'nan' string por NaN visual
+    # 6 Reemplazar espacios vacíos o 'nan' string por NaN visual
     df = df.replace(r"^\s*$", "", regex=True)
 
-    # 7️⃣ Guardar archivo final limpio
+    # 7 Guardar archivo final limpio
     df.to_csv(OUTPUT_PATH, sep=";", encoding="utf-8", index=False)
     print(f"Archivo final limpio guardado en: {OUTPUT_PATH}")
     print("Codificación: UTF-8 | Edades enteras | Vacíos reales \n")

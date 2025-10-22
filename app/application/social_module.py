@@ -112,22 +112,41 @@ def analyze_social_patterns(df: pd.DataFrame) -> pd.DataFrame:
     return summary[["ciudad", "vulnerabilidad", "nivel_de_urgencia", "patron_social", "n_reportes"]]
 
 def compute_social_index(df: pd.DataFrame) -> pd.DataFrame:
-    """Ranking final: mezcla vulnerabilidad (estructura) + urgencia (momento)."""
+    """
+    Calcula el índice de impacto social combinando factores estructurales (vulnerabilidad),
+    de acceso y contexto (internet, atención, ruralidad) y urgencia.
+    """
     summary = analyze_social_patterns(df)
 
-    # Cálculo del impacto social total
-    summary["impacto_social"] = (
-        0.6 * summary["vulnerabilidad"] +
-        0.4 * summary["nivel_de_urgencia"]
-    ).round(2)
+    # Unir datos base para tener acceso_a_internet, etc.
+    base_cols = ["ciudad", "acceso_a_internet", "atencion_previa_del_gobierno", "zona_rural"]
+    base_info = df[base_cols].groupby("ciudad", as_index=False).mean()
 
-    # Generar gráfico solo después de tener la columna impacto_social
+    summary = summary.merge(base_info, on="ciudad", how="left")
+
+    # Normalizar de 0 a 1 para evitar sesgos
+    for col in ["vulnerabilidad", "nivel_de_urgencia", "acceso_a_internet", "atencion_previa_del_gobierno", "zona_rural"]:
+        summary[col] = (summary[col] - summary[col].min()) / (summary[col].max() - summary[col].min() + 1e-9)
+
+    # Cálculo ponderado más realista
+    summary["impacto_social"] = (
+        (summary["vulnerabilidad"] * 0.35) +
+        (summary["nivel_de_urgencia"] * 0.25) +
+        ((1 - summary["acceso_a_internet"]) * 0.2) +
+        ((1 - summary["atencion_previa_del_gobierno"]) * 0.1) +
+        (summary["zona_rural"] * 0.1)
+    )
+
+    # Redondeo solo al final
+    summary["impacto_social"] = summary["impacto_social"].round(3)
+
+    # Generar gráfico
     try:
         generate_impact_chart(summary)
     except Exception as e:
         print("⚠️ No se pudo generar el gráfico:", e)
 
-    # Orden descendente y limpieza final
+    # Ordenar por impacto descendente
     return summary[[
         "ciudad", "vulnerabilidad", "nivel_de_urgencia",
         "patron_social", "impacto_social", "n_reportes"
@@ -162,4 +181,4 @@ def generate_impact_chart(summary: pd.DataFrame, output_path="data/visuals/impac
     plt.tight_layout()
     plt.savefig(output_path, bbox_inches="tight")
     plt.close()
-    print(f"📊 Gráfico guardado en {output_path}")
+    print(f"Gráfico guardado en {output_path}")

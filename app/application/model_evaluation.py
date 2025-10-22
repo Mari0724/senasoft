@@ -13,7 +13,7 @@ def evaluate_social_model():
     # Calculamos el índice social completo
     summary = compute_social_index(df)
 
-    # === 1️⃣ Distribución de vulnerabilidad vs urgencia ===
+    # === 1 Distribución de vulnerabilidad vs urgencia ===
     plt.figure(figsize=(8, 6))
     sns.scatterplot(
         data=summary,
@@ -28,7 +28,7 @@ def evaluate_social_model():
         },
         s=100
     )
-    plt.title("🧭 Relación entre Vulnerabilidad y Urgencia por Patrón Social")
+    plt.title("\n Relación entre Vulnerabilidad y Urgencia por Patrón Social")
     plt.xlabel("Vulnerabilidad (0–1)")
     plt.ylabel("Urgencia (0–1)")
     plt.grid(True, linestyle="--", alpha=0.4)
@@ -36,12 +36,12 @@ def evaluate_social_model():
     plt.savefig("data/visuals/model_learning_scatter.png", bbox_inches="tight")
     plt.close()
 
-    # === 2️⃣ Correlación entre variables ===
+    # === 2 Correlación entre variables ===
     corr = df[["nivel_de_urgencia", "acceso_a_internet", "atencion_previa_del_gobierno", "zona_rural"]].corr()
 
     plt.figure(figsize=(6, 5))
     sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
-    plt.title("📈 Correlaciones aprendidas entre variables sociales")
+    plt.title("Correlaciones aprendidas entre variables sociales")
     plt.tight_layout()
     plt.savefig("data/visuals/model_correlation_heatmap.png", bbox_inches="tight")
     plt.close()

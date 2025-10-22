@@ -81,7 +81,7 @@ def evaluar_y_graficar(df, embeddings, k_min=3, k_max=10):
         plt.tight_layout()
         plt.savefig("data/visuals/elbow_k.png", dpi=300, bbox_inches="tight")
         plt.close()
-        print("📊 Guardado: data/visuals/elbow_k.png")
+        print("Guardado: data/visuals/elbow_k.png")
 
         # Silhouette por K
         plt.figure(figsize=(8, 5))
