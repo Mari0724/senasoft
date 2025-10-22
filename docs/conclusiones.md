@@ -2,7 +2,7 @@
 ---
 
 #### **docs/conclusiones.md**
-```markdown
+
 # Conclusiones
 
 La solución integra Inteligencia Artificial y análisis social para ofrecer una herramienta capaz de detectar patrones y urgencias comunitarias.  
