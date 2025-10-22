@@ -1,6 +1,7 @@
 site_name: Reto IBM + SENA 2025 - Inteligencia Artificial
 nav:
   - Inicio: index.md
+  - Contexto y Justificación: problematica.md
   - Objetivos: objetivos.md
   - Metodología Ágil: metodologia_agil.md
   - Arquitectura: arquitectura.md

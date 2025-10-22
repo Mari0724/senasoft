@@ -12,9 +12,9 @@ El reto se desarrolló en **dos sprints de un día**, con reuniones breves de se
 
 | Rol | Integrante | Responsabilidad |
 |------|-------------|----------------|
-| Scrum Master & Product Owner | Emilia Gallo Alzate & Maria Ximena Marin Delgado | Gestión del tiempo, definición de objetivos diarios y priorización de tareas. |
-| Maria Ximena Marin Delgado | Integrante 1 | Desarrollo del módulo de IA Temática (procesamiento de texto). |
-| Emilia Gallo Alzate | Integrante 2 | Desarrollo del módulo de IA Social + API y visualización de resultados. |
+| Scrum Master & Product Owner | **Emilia Gallo Alzate** & **María Ximena Marín Delgado** | Gestión del tiempo, definición de objetivos diarios y priorización de tareas. |
+| María Ximena Marín Delgado | Integrante 1 | Desarrollo del módulo de **IA Temática (procesamiento de texto)**. |
+| Emilia Gallo Alzate | Integrante 2 | Desarrollo del módulo de **IA Social + API** y visualización de resultados. |
 
 > ⚙️ Ambos miembros participaron en la planificación, documentación y pruebas finales, garantizando una visión compartida del proyecto.
 
@@ -32,6 +32,7 @@ El reto se desarrolló en **dos sprints de un día**, con reuniones breves de se
 ---
 
 ## Beneficios del enfoque ágil
-- Permite **avanzar en paralelo** sin bloqueos.
-- Fomenta la **autoorganización** y la comunicación constante.
+- Permite **avanzar en paralelo** sin bloqueos.  
+- Fomenta la **autoorganización** y la comunicación constante.  
+- Facilita la **integración progresiva** de ambos módulos.  
 - Garantiza una **entrega funcional y documentada en poco tiempo**.

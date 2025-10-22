@@ -15,6 +15,4 @@ class Settings:
 
     SECRET_KEY: str = os.getenv("SECRET_KEY", "changeme")
 
-    DATABASE_URL: str = os.getenv("DATABASE_URL", None)
-
 settings = Settings()

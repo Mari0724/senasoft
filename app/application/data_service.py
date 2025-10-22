@@ -6,15 +6,14 @@ import chardet
 import numpy as np
 
 # ==============================
-# 📂 RUTAS
+# RUTAS
 # ==============================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR, "data", "original.csv")
 OUTPUT_PATH = os.path.join(BASE_DIR, "data", "clean_data.csv")
 
-# ==============================
-# 🧠 FUNCIONES AUXILIARES
-# ==============================
+
+
 def normalize_text(text: str) -> str:
     """Convierte texto a minúsculas, sin acentos ni símbolos raros."""
     if not isinstance(text, str):
@@ -37,22 +36,20 @@ def normalize_columns(columns):
         normalized.append(col)
     return normalized
 
-# ==============================
-# 🚀 ETL COMPLETO
-# ==============================
+
 def run_etl():
-    print("🚀 Iniciando ETL completo con normalización numérica y textual...")
+    print("Iniciando ETL completo con normalización numérica y textual...")
 
     # 1️⃣ Detectar codificación
     with open(DATA_PATH, "rb") as f:
         raw = f.read()
         detected = chardet.detect(raw)
         encoding_used = detected["encoding"]
-    print(f"🔍 Codificación detectada: {encoding_used}")
+    print(f" Codificación detectada: {encoding_used}")
 
     # 2️⃣ Leer CSV
     df = pd.read_csv(DATA_PATH, sep=",", encoding=encoding_used, on_bad_lines="skip")
-    print(f"📥 Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
+    print(f" Datos cargados: {df.shape[0]} filas, {df.shape[1]} columnas")
 
     # 3️⃣ Normalizar nombres de columnas
     df.columns = normalize_columns(df.columns)
@@ -78,8 +75,8 @@ def run_etl():
 
     # 7️⃣ Guardar archivo final limpio
     df.to_csv(OUTPUT_PATH, sep=";", encoding="utf-8", index=False)
-    print(f"✅ Archivo final limpio guardado en: {OUTPUT_PATH}")
-    print("🎯 Codificación: UTF-8 | Edades enteras | Vacíos reales (sin 23.0 ni NaN)\n")
+    print(f"Archivo final limpio guardado en: {OUTPUT_PATH}")
+    print("Codificación: UTF-8 | Edades enteras | Vacíos reales \n")
 
 
 if __name__ == "__main__":
