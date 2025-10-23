@@ -7,7 +7,7 @@ from app.application.openai_service import generar_explicacion_desde_csv
 import pandas as pd
 
 # ==============================
-# 📦 Importar módulos de aplicación
+# Importar módulos de aplicación
 # ==============================
 from app.application.social_module import (
     load_dataset, analyze_social_patterns, compute_social_index
@@ -15,7 +15,7 @@ from app.application.social_module import (
 from app.application.pipeline import run_pipeline
 
 # ==============================
-# ⚙️ Configuración base del router
+# Configuración base del router
 # ==============================
 router = APIRouter(prefix="/api", tags=["Análisis Social"])
 DATA_PATH = "data/clean_data.csv"
@@ -28,7 +28,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, "app", "api", "templates")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # ==============================
-# 🌍 Endpoints analíticos
+# Endpoints analíticos
 # ==============================
 @router.get("/patterns")
 def get_social_patterns():
@@ -47,19 +47,19 @@ def get_social_index():
 
 
 # ==============================
-# 🚀 Ejecutar pipeline completo
+# Ejecutar pipeline completo
 # ==============================
 @router.post("/run_pipeline")
 def trigger_pipeline():
     """
-    Ejecuta todo el flujo de ComuniMind:
+    Ejecuta todo el flujo de CivIA:
     - Limpieza de datos (ETL)
     - Análisis de temas y sentimientos (NLP)
     - Cálculo de impacto social
     - Generación de visualizaciones
     """
     try:
-        print("🚀 Ejecutando pipeline completo desde API...")
+        print("Ejecutando pipeline completo desde API...")
         run_pipeline()
 
         response = {
@@ -83,7 +83,7 @@ def trigger_pipeline():
 @router.post("/explain")
 def explain_dashboard():
     """
-    💬 Genera una explicación automática del dashboard leyendo los CSV del análisis social y de sentimiento,
+    Genera una explicación automática del dashboard leyendo los CSV del análisis social y de sentimiento,
     y utiliza OpenAI para crear un texto interpretativo.
     """
     try:
@@ -105,15 +105,15 @@ def explain_dashboard():
         )
 
 # ==============================
-# 🖥️ Dashboard visual
+# Dashboard visual
 # ==============================
 @router.get("/dashboard", response_class=HTMLResponse)
 def show_dashboard(request: Request):
-    """Renderiza el dashboard visual de ComuniMind."""
+    """Renderiza el dashboard visual de CivIA."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 # -------------------------------------------------------
-# 🖼️ Listar imágenes del dashboard
+# Listar imágenes del dashboard
 # -------------------------------------------------------
 @router.get("/images")
 def list_dashboard_images():
@@ -170,7 +170,7 @@ def get_model_metrics():
 @router.get("/kpis")
 def get_dashboard_kpis():
     """
-    📊 Devuelve métricas generales del dashboard:
+    Devuelve métricas generales del dashboard:
     - Total de registros analizados
     - Porcentaje promedio de sentimiento positivo
     - Número de categorías activas

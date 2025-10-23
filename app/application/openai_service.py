@@ -16,7 +16,7 @@ def generar_explicacion_desde_csv() -> str:
         df_sent = pd.read_csv(os.path.join(DATA_DIR, "themes_nlp.csv"), sep=";")
         print("Datos cargados correctamente.")
     except Exception as e:
-        raise FileNotFoundError(f"⚠️ No se pudieron cargar los CSV: {e}")
+        raise FileNotFoundError(f"No se pudieron cargar los CSV: {e}")
 
     # 2 Extraer indicadores sociales
     top_ciudades = df_impacto.sort_values("impacto_social", ascending=False)["ciudad"].head(3).tolist()

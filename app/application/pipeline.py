@@ -20,7 +20,7 @@ os.makedirs(INFRA_VISUALS, exist_ok=True)
 # PIPELINE COMPLETO
 # ==============================
 def run_pipeline():
-    print("🔄 Iniciando pipeline completo de ComuniMind...\n")
+    print("Iniciando pipeline completo de CivIA...\n")
 
     # -------------------------------------------------
     # 1 ETL: limpieza y normalización de datos

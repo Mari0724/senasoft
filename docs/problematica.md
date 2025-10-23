@@ -56,7 +56,7 @@ Además, genera un **impacto indirecto en la comunidad**, al permitir que los es
 ---
 
 > En síntesis, **nuestra solución no se enfoca en un solo sector porque la problemática social no lo está**.  
-> **ComuniMind** convierte los datos dispersos de la comunidad en conocimiento útil y humano, utilizando IA para conectar la voz ciudadana con las condiciones sociales que explican sus necesidades.  
+> **CivIA** convierte los datos dispersos de la comunidad en conocimiento útil y humano, utilizando IA para conectar la voz ciudadana con las condiciones sociales que explican sus necesidades.  
 
 📘 *Una explicación detallada de los modelos, módulos y procesos técnicos se encuentra en el archivo* [`proceso_solucion.md`](proceso_solucion.md), *donde se documenta paso a paso el desarrollo completo de la solución.*
 

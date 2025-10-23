@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 # =========================================
-# 1️⃣ CARGA Y NORMALIZACIÓN DE DATOS
+# 1️ CARGA Y NORMALIZACIÓN DE DATOS
 # =========================================
 def load_dataset(path: str) -> pd.DataFrame:
     """Carga el dataset, detecta separador y normaliza columnas."""
@@ -53,7 +53,7 @@ def normalize_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 # =========================================
-# 2️⃣ ÍNDICE DE VULNERABILIDAD SOCIAL
+# 2️ ÍNDICE DE VULNERABILIDAD SOCIAL
 # =========================================
 def analyze_social_patterns(df: pd.DataFrame) -> pd.DataFrame:
     """Combina factores sociales y urgencia y clasifica con umbrales dinámicos."""
@@ -144,7 +144,7 @@ def compute_social_index(df: pd.DataFrame) -> pd.DataFrame:
     try:
         generate_impact_chart(summary)
     except Exception as e:
-        print("⚠️ No se pudo generar el gráfico:", e)
+        print("No se pudo generar el gráfico:", e)
 
     # Ordenar por impacto descendente
     return summary[[
@@ -158,7 +158,7 @@ def generate_impact_chart(summary: pd.DataFrame, output_path="data/visuals/impac
     import matplotlib.pyplot as plt
 
     if "impacto_social" not in summary.columns:
-        print("⚠️ No se encontró la columna 'impacto_social'. Se omite el gráfico.")
+        print("No se encontró la columna 'impacto_social'. Se omite el gráfico.")
         return
 
     plt.figure(figsize=(8,5))

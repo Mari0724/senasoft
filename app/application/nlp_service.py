@@ -41,7 +41,7 @@ def cargar_y_preparar_datos(path: str) -> pd.DataFrame:
 
 
 # ============================================================
-#  2️⃣ GENERAR EMBEDDINGS SEMÁNTICOS
+#  2️ GENERAR EMBEDDINGS SEMÁNTICOS
 # ============================================================
 def generar_embeddings(df: pd.DataFrame):
     print("Generando embeddings semánticos (modelo MiniLM)...")
@@ -145,7 +145,7 @@ def ejecutar_nlp_pipeline():
 
 
 # ============================================================
-#  6️⃣ EJECUCIÓN DIRECTA
+#  6️ EJECUCIÓN DIRECTA
 # ============================================================
 if __name__ == "__main__":
     ejecutar_nlp_pipeline()

@@ -99,5 +99,5 @@ Incluye tanto la descripción técnica como el **formato oficial del SENA**.
 
 ---
 
-> 💡 *Esta estructura modular permitió mantener orden, trazabilidad y escalabilidad en la solución ComuniMind, siguiendo los principios del diseño hexagonal adaptados al contexto del reto SENASoft 2025.*
+> 💡 *Esta estructura modular permitió mantener orden, trazabilidad y escalabilidad en la solución CivIA, siguiendo los principios del diseño hexagonal adaptados al contexto del reto SENASoft 2025.*
 ```
