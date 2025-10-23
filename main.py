@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api import routes
 
@@ -8,15 +9,19 @@ from app.api import routes
 # ======================================================
 app = FastAPI(title="SENASOFT", version="1.0")
 
-# ======================================================
-# 📂 Servir directamente las gráficas desde infrastructure/visuals
-# ======================================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-VISUALS_DIR = os.path.join(BASE_DIR, "app", "infrastructure", "visuals")
+# ==== Configurar CORS (para permitir conexión con React) ====
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# 🔹 Montamos la carpeta como “/visuals”
-# Esto permite que dashboard.html use url_for('visuals', path='...')
-app.mount("/visuals", StaticFiles(directory=VISUALS_DIR), name="visuals")
+# ==== Servir las imágenes directamente desde infrastructure/visuals ====
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "app", "infrastructure", "visuals")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # ======================================================
 # 🔗 Rutas de la API
