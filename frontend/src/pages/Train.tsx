@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Brain, Play, CheckCircle2, AlertCircle } from "lucide-react";
+import { Brain, Play, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiService } from "@/services/api";
@@ -9,7 +9,14 @@ import { toast } from "sonner";
 export default function Train() {
   const [isTraining, setIsTraining] = useState(false);
   const [trainStatus, setTrainStatus] = useState<"idle" | "success" | "error">("idle");
+  const [kpis, setKpis] = useState({
+    total_registros: 0,
+    sentimiento_positivo: 0,
+    categorias_activas: 0,
+    temas_identificados: 0,
+  });
 
+  // 🔹 Ejecuta el pipeline y luego actualiza los KPIs
   const handleTrain = async () => {
     setIsTraining(true);
     setTrainStatus("idle");
@@ -17,9 +24,15 @@ export default function Train() {
     try {
       const response = await apiService.runPipeline();
       setTrainStatus("success");
+
       toast.success("Entrenamiento completado", {
         description: response.message || "El modelo se ha entrenado exitosamente",
       });
+
+      // ✅ Al finalizar, obtener KPIs actualizados
+      const kpiData = await apiService.getKpis();
+      setKpis(kpiData);
+
     } catch (error) {
       setTrainStatus("error");
       toast.error("Error en el entrenamiento", {
@@ -27,6 +40,17 @@ export default function Train() {
       });
     } finally {
       setIsTraining(false);
+    }
+  };
+
+  // 🔁 Permitir refrescar métricas manualmente
+  const handleRefreshKpis = async () => {
+    try {
+      const data = await apiService.getKpis();
+      setKpis(data);
+      toast.success("Indicadores actualizados");
+    } catch {
+      toast.error("No se pudieron actualizar los indicadores");
     }
   };
 
@@ -95,35 +119,57 @@ export default function Train() {
         </CardContent>
       </Card>
 
-      {/* Additional info cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* KPI Cards */}
+      <div className="flex items-center justify-between mt-8">
+        <h2 className="text-xl font-semibold">Indicadores del modelo</h2>
+        <Button
+          onClick={handleRefreshKpis}
+          size="sm"
+          className="gap-2 text-sm"
+          variant="outline"
+        >
+          <RefreshCw className="h-4 w-4" /> Actualizar
+        </Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">Datos procesados</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">1,247</p>
+            <p className="text-2xl font-bold text-primary">{kpis.total_registros.toLocaleString()}</p>
             <p className="text-xs text-muted-foreground">registros analizados</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Precisión actual</CardTitle>
+            <CardTitle className="text-sm font-medium">Sentimiento Positivo</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">94.2%</p>
-            <p className="text-xs text-muted-foreground">modelo activo</p>
+            <p className="text-2xl font-bold text-green-600">{kpis.sentimiento_positivo.toFixed(1)}%</p>
+            <p className="text-xs text-muted-foreground">promedio detectado</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Último entrenamiento</CardTitle>
+            <CardTitle className="text-sm font-medium">Categorías Activas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">2h</p>
-            <p className="text-xs text-muted-foreground">hace</p>
+            <p className="text-2xl font-bold text-primary">{kpis.categorias_activas}</p>
+            <p className="text-xs text-muted-foreground">problemas detectados</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Temas Identificados</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-primary">{kpis.temas_identificados}</p>
+            <p className="text-xs text-muted-foreground">en análisis NLP</p>
           </CardContent>
         </Card>
       </div>

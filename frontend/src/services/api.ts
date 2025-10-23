@@ -74,6 +74,15 @@ class ApiService {
   getChartUrl(chartName: string): string {
     return `${this.baseUrl}/static/${chartName}`;
   }
+
+  async getKpis(): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/kpis`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+  return response.json();
+}
+
 }
 
 export const apiService = new ApiService();

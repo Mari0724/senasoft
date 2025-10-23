@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MessageSquare, RefreshCw } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiService } from "@/services/api";
@@ -12,20 +12,40 @@ const charts = [
   { name: "internet_vs_urgencia.png", title: "Internet vs Urgencia" },
   { name: "sentimiento_promedio.png", title: "Sentimiento Promedio" },
   { name: "temas_detectados.png", title: "Temas Detectados" },
-  { name: "categorias_impacto.png", title: "Categorias De Mayor Impacto" },
-  { name: "reportes_por_genero.png", title: "Reportes Por Genero" },
+  { name: "categorias_impacto.png", title: "Categorías de Mayor Impacto" },
+  { name: "reportes_por_genero.png", title: "Reportes por Género" },
 ];
 
 export default function Dashboard() {
   const [explanation, setExplanation] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [kpis, setKpis] = useState({
+    total_registros: 0,
+    sentimiento_positivo: 0,
+    categorias_activas: 0,
+    temas_identificados: 0,
+  });
 
+  // 🔹 Cargar KPIs automáticamente al abrir el dashboard
+  useEffect(() => {
+    const fetchKpis = async () => {
+      try {
+        const data = await apiService.getKpis();
+        setKpis(data);
+      } catch (error) {
+        console.error("Error cargando KPIs:", error);
+        toast.error("No se pudieron cargar los indicadores principales");
+      }
+    };
+    fetchKpis();
+  }, []);
+
+  // 💬 Explicación IA
   const handleExplain = async () => {
     setIsLoading(true);
     try {
       const response = await apiService.explainDashboard();
       setExplanation(response.explanation || response.message);
-
       toast.success("Explicación generada", {
         description: "La IA ha analizado el dashboard exitosamente",
       });
@@ -38,6 +58,9 @@ export default function Dashboard() {
     }
   };
 
+  // =======================
+  // 🧠 Render del Dashboard
+  // =======================
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -49,12 +72,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <Button
-          onClick={handleExplain}
-          size="lg"
-          disabled={isLoading}
-          className="gap-2"
-        >
+        <Button onClick={handleExplain} size="lg" disabled={isLoading} className="gap-2">
           <MessageSquare className="h-5 w-5" />
           {isLoading ? "Analizando..." : "💬 IA, Explícame este panel"}
         </Button>
@@ -119,49 +137,45 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Stats Overview */}
+      {/* Stats Overview (KPIs dinámicos) */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Registros
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Registros</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">1,247</p>
+            <p className="text-2xl font-bold text-primary">
+              {kpis.total_registros.toLocaleString()}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Sentimiento Positivo
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Sentimiento Positivo</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600">67%</p>
+            <p className="text-2xl font-bold text-green-600">
+              {kpis.sentimiento_positivo.toFixed(1)}%
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Categorías Activas
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Categorías Activas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">12</p>
+            <p className="text-2xl font-bold text-primary">{kpis.categorias_activas}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Temas Identificados
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Temas Identificados</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">8</p>
+            <p className="text-2xl font-bold text-primary">{kpis.temas_identificados}</p>
           </CardContent>
         </Card>
       </div>
