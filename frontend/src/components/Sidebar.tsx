@@ -80,6 +80,14 @@ export function Sidebar() {
             ))}
           </nav>
 
+          {/* Botón para volver al inicio */}
+          <NavLink
+            to="/"
+            className="flex items-center justify-center gap-2 mt-auto mb-4 mx-3 rounded-lg px-3 py-2 text-sm font-medium text-[#B40000] border border-[#B40000]/50 hover:bg-[#B40000] hover:text-white transition-all"
+          >
+            Volver al Inicio
+          </NavLink>
+
           {/* Footer */}
           <div className="border-t border-border p-4">
             <p className="text-xs text-muted-foreground text-center">

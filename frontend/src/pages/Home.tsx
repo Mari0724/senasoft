@@ -1,30 +1,40 @@
+import { useState } from "react";
+import { Brain, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [showQR, setShowQR] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 text-center px-6">
-      {/* 🔹 Contenedor general (centrado en pantalla) */}
-      <div className="max-w-5xl w-full grid grid-cols-2 gap-12 items-center">
-        {/* 🔸 Columna izquierda - Logo y texto */}
-        <div className="flex flex-col items-center justify-center space-y-5">
-          <img
-            src="/logo.png"
-            alt="Logo CivIA"
-            className="w-28 h-28 mb-2 drop-shadow-md"
-          />
-          <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
-            Civ<span className="text-[#B40000]">IA</span>
-          </h1>
-          <p className="text-gray-600 text-lg font-medium -mt-2">
-            Sistema de Análisis Inteligente SENA
-          </p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 text-center px-12">
+      {/* 🔹 Contenedor principal más ancho y balanceado */}
+      <div className="max-w-7xl w-full grid grid-cols-2 gap-20 items-center">
+        {/* 🔸 Columna izquierda — Logo y autores */}
+        <div className="flex flex-col items-center justify-center space-y-10">
+          {/* Logo institucional */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#B40000] shadow-lg">
+                <Brain className="h-10 w-10 text-white" />
+              </div>
+              <div className="text-left">
+                <h1 className="text-6xl font-extrabold text-gray-900">
+                  Civ<span className="text-[#B40000]">IA</span>
+                </h1>
+                <p className="text-lg text-gray-600 -mt-1">SENA/Soft 2025</p>
+              </div>
+            </div>
 
-          <div className="text-gray-800 font-medium text-sm">
+            <p className="text-gray-500 text-base mt-3">
+              Sistema de Análisis Inteligente SENA
+            </p>
+          </div>
+
+          {/* Autoras */}
+          <div className="text-gray-800 font-medium text-base mt-2">
             <p className="uppercase text-[#B40000] font-semibold text-xs mb-1 tracking-widest">
               Desarrollado por
             </p>
@@ -32,44 +42,62 @@ export default function Home() {
             <p>María Ximena Marín Delgado</p>
           </div>
 
+          {/* Botón de acceso */}
           <Button
             onClick={() => navigate("/dashboard")}
             size="lg"
-            className="mt-4 bg-[#B40000] hover:bg-red-700 text-white font-semibold text-base px-8 py-6 rounded-full flex items-center gap-2 shadow-md"
+            className="mt-6 bg-[#B40000] hover:bg-red-700 text-white text-lg font-semibold px-10 py-7 rounded-full flex items-center gap-3 shadow-lg transition-transform hover:scale-105"
           >
-            🚀 Entrar a la Plataforma <ArrowRight className="w-4 h-4" />
+            Entrar a la Plataforma <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* 🔸 Columna derecha - QR y descripción */}
-        <Card className="bg-white/90 backdrop-blur-sm shadow-md border border-gray-200 rounded-2xl h-[430px] flex flex-col justify-center">
+        {/* 🔸 Columna derecha — QR y descripción */}
+        <Card className="bg-white/95 backdrop-blur-md shadow-xl border border-gray-200 rounded-3xl h-[480px] flex flex-col justify-center">
           <CardHeader className="pb-3">
-            <CardTitle className="text-[#B40000] text-sm font-semibold tracking-wider uppercase">
+            <CardTitle className="text-[#B40000] text-lg font-semibold tracking-wider uppercase">
               Documentación del Proyecto
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center space-y-4">
-            {/* QR */}
-            <div className="bg-gray-100 border border-dashed border-gray-400 rounded-xl w-40 h-40 flex items-center justify-center">
-              <img
-                src="/qr-docu.png"
-                alt="QR de documentación"
-                className="w-32 h-32 object-contain opacity-90"
-              />
+          <CardContent className="flex flex-col items-center justify-center space-y-6">
+            {/* Interacción para mostrar QR */}
+            <div className="flex flex-col items-center justify-center mt-2 space-y-3">
+              {!showQR ? (
+                <>
+                  <p className="text-base text-gray-600">
+                    Escanea el código de documentación
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowQR(true)}
+                    className="border-[#B40000] text-[#B40000] hover:bg-[#B40000] hover:text-white transition-all text-base px-6 py-3"
+                  >
+                    Mostrar QR
+                  </Button>
+                </>
+              ) : (
+                <div className="bg-gray-100 border border-dashed border-gray-400 rounded-2xl w-48 h-48 flex items-center justify-center shadow-sm">
+                  <img
+                    src="/CivIA.png"
+                    alt="QR de documentación"
+                    className="w-40 h-40 object-contain opacity-90"
+                  />
+                </div>
+              )}
             </div>
             {/* Descripción */}
-            <p className="text-gray-700 text-sm leading-relaxed max-w-sm">
-              <strong>CivIA</strong> es una herramienta que analiza información social y emocional 
-              proveniente de comunidades locales. Usa inteligencia artificial para detectar patrones, 
-              medir impacto social y ofrecer recomendaciones automatizadas a organizaciones sociales 
-              y del sector público.
+            <p className="text-gray-700 text-base leading-relaxed max-w-md text-center">
+              <strong>CivIA</strong> es una herramienta que analiza información social y emocional
+              proveniente de comunidades locales. Utiliza inteligencia artificial para detectar
+              patrones, medir el impacto social y ofrecer recomendaciones automatizadas a
+              organizaciones del sector público y social.
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* 🔹 Footer discreto */}
-      <footer className="absolute bottom-4 text-xs text-gray-500">
+      {/* 🔹 Footer */}
+      <footer className="absolute bottom-5 text-sm text-gray-500">
         © 2025 CivIA — Proyecto desarrollado en el marco de SENASOFT
       </footer>
     </div>
