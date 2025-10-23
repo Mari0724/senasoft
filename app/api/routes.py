@@ -80,16 +80,29 @@ def trigger_pipeline():
         return JSONResponse(content=response, status_code=500)
 
 
-@router.get("/explain")
+@router.post("/explain")
 def explain_dashboard():
     """
-    Genera una explicación automática del dashboard leyendo los CSV del análisis social y de sentimiento.
+    💬 Genera una explicación automática del dashboard leyendo los CSV del análisis social y de sentimiento,
+    y utiliza OpenAI para crear un texto interpretativo.
     """
     try:
         explicacion = generar_explicacion_desde_csv()
-        return {"status": "success", "explicacion": explicacion}
+        return JSONResponse(
+            content={
+                "status": "success",
+                "explanation": explicacion  # 👈 el frontend Lovable usa esta key
+            },
+            status_code=200
+        )
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return JSONResponse(
+            content={
+                "status": "error",
+                "explanation": f"Ocurrió un error al generar la explicación: {str(e)}"
+            },
+            status_code=500
+        )
 
 # ==============================
 # 🖥️ Dashboard visual
@@ -110,43 +123,6 @@ def list_dashboard_images():
     return JSONResponse(
         content=[{"name": f, "url": f"/static/{f}"} for f in files], status_code=200
     )
-
-# -------------------------------------------------------
-# 💬 IA: Explicar dashboard
-# -------------------------------------------------------
-@router.post("/explain")
-def explain_dashboard():
-    fr = os.path.join(DATA_DIR, "final_results.csv")
-    if not os.path.exists(fr):
-        return JSONResponse(
-            content={
-                "status": "error",
-                "message": "No existe final_results.csv. Ejecuta el pipeline.",
-            },
-            status_code=400,
-        )
-
-    df = pd.read_csv(fr, sep=";")
-    top_ciudades = df.groupby("ciudad")["impacto_social"].mean().sort_values(ascending=False).head(3)
-    top_categorias = (
-        df.groupby("categoria_del_problema")["impacto_social"].mean()
-        .sort_values(ascending=False)
-        .head(3)
-    )
-    temas_top = df["palabras_clave"].value_counts().head(5).index.tolist()
-
-    explicacion = (
-        "Resumen del panel:\n"
-        f"- Ciudades con mayor impacto: {top_ciudades.to_dict()}\n"
-        f"- Categorías más críticas: {top_categorias.index.tolist()}\n"
-        f"- Temas detectados frecuentes (NLP): {temas_top}\n\n"
-        "Sugerencias:\n"
-        "1) Priorizar intervención en las 2 ciudades con mayor impacto.\n"
-        "2) Focalizar recursos en las 2 categorías críticas.\n"
-        "3) Usar los 'temas detectados' para diseñar acciones concretas."
-    )
-
-    return {"status": "success", "message": explicacion}
 
 @router.get("/metrics")
 def get_model_metrics():
@@ -188,5 +164,58 @@ def get_model_metrics():
     except Exception as e:
         return JSONResponse(
             content={"error": f"No se pudieron calcular las métricas: {str(e)}"},
+            status_code=500,
+        )
+
+@router.get("/kpis")
+def get_dashboard_kpis():
+    """
+    📊 Devuelve métricas generales del dashboard:
+    - Total de registros analizados
+    - Porcentaje promedio de sentimiento positivo
+    - Número de categorías activas
+    - Número de temas identificados por NLP
+    """
+    import pandas as pd
+    import os
+
+    try:
+        # Cargar los datasets procesados
+        df_final = pd.read_csv(os.path.join(DATA_DIR, "final_results.csv"), sep=";")
+        df_sent = pd.read_csv(os.path.join(DATA_DIR, "themes_nlp.csv"), sep=";")
+
+        # Total de registros
+        total_registros = len(df_final)
+
+        # Sentimiento positivo promedio
+        if "sent_pos" in df_sent.columns:
+            sentimiento_promedio = round(df_sent["sent_pos"].mean() * 100, 1)
+        else:
+            sentimiento_promedio = 0.0
+
+        # Categorías activas
+        if "categoria_del_problema" in df_final.columns:
+            categorias_activas = df_final["categoria_del_problema"].nunique()
+        else:
+            categorias_activas = 0
+
+        # Temas identificados
+        if "palabras_clave" in df_sent.columns:
+            temas_identificados = df_sent["palabras_clave"].nunique()
+        else:
+            temas_identificados = 0
+
+        kpis = {
+            "total_registros": total_registros,
+            "sentimiento_positivo": sentimiento_promedio,
+            "categorias_activas": categorias_activas,
+            "temas_identificados": temas_identificados,
+        }
+
+        return JSONResponse(content=kpis, status_code=200)
+
+    except Exception as e:
+        return JSONResponse(
+            content={"error": f"No se pudieron calcular los KPIs: {str(e)}"},
             status_code=500,
         )
